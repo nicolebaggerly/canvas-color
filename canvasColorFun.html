@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+
+<script>
+const canvas = document.querySelector('#draw');
+// ctx is where we do all of the drawing for the canvas 
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+ctx.strokeStyle = '#BADA55';
+ctx.lineJoin = 'round';
+ctx.lineCap = 'round';
+ctx.lineWidth = 100;
+
+// preset to false so when moving mouse without clicking down, nothing occurs
+// only draws when mouse is clicked and moves 
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+let hue = 0;
+let direction = true;
+
+function draw (e) {
+  if (!isDrawing) return; // stops function from running if user is not moused down 
+  console.log(e);
+  ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+  ctx.beginPath();
+  // start from
+  ctx.moveTo(lastX, lastY);
+  // go to
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+
+  hue++;
+
+  // if lineWidth is too big or too small, this flips the direction 
+  if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+    direction = !direction;
+  }
+
+    // if direction = true, increase lineWidth. if false, decrease 
+    if (direction) {
+    ctx.lineWidth++;
+  } else {
+    ctx.lineWidth--;
+  }
+}
+
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mousedown', (e) => {
+  isDrawing = true;
+  [lastX, lastY] = [e.offsetX, e.offsetY]
+  //updates offset to last place before mousedown is run so we don't always have to start at 0
+});
+canvas.addEventListener('mouseup', () => isDrawing = false);
+// mouseout for if user moves mouse off canvas, function knows to stop drawing
+canvas.addEventListener('mouseout', () => isDrawing = false);
+
+
+
+
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>
